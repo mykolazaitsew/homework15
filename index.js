@@ -32,16 +32,19 @@ class Note {
     addNote(name, description) {
       const note = new Note(name, description);
       this.notes.push(note);
+      render();
     }
   
     deleteNote(name) {
       this.notes = this.notes.filter((note) => note.name !== name);
+      render();
     }
   
     editNote(name, newName, newDescription) {
       const note = this.notes.find((note) => note.name === name);
       if (note) {
         note.edit(newName, newDescription);
+        render();
       }
     }
   
@@ -50,6 +53,7 @@ class Note {
       if (note) {
         note.markAsCompleted();
       }
+      render();
     }
   
     getNote(name) {
@@ -74,14 +78,17 @@ class Note {
   
     sortByStatus() {
       this.notes.sort((a, b) => a.completed - b.completed);
+      render();
     }
   
     sortByCreationDate() {
       this.notes.sort((a, b) => a.createdAt - b.createdAt);
+      render();
     }
   
     sortByEditDate() {
       this.notes.sort((a, b) => (a.editedAt || a.createdAt) - (b.editedAt || b.createdAt));
+      render();
     }
   }
     
@@ -118,5 +125,26 @@ class Note {
   function toggleComplete(name) {
     todoList.markAsCompleted(name);
   }
+
+  function render() {
+    const notesList = document.getElementById('notesList');
+    notesList.innerHTML = '';
+    todoList.getAllNotes().forEach(note => {
+      const noteDiv = document.createElement('div');
+      noteDiv.className = 'note' + (note.completed ? ' completed' : '');
+      noteDiv.innerHTML = `
+        <h3>${note.name}</h3>
+        <p>${note.description}</p>
+        <small>Created: ${note.createdAt.toLocaleString()}</small>
+        <small>Edited: ${note.editedAt ? note.editedAt.toLocaleString() : 'Never'}</small>
+        <button onclick="editNotePrompt('${note.name}')">Edit</button>
+        <button onclick="deleteNotePrompt('${note.name}')">Delete</button>
+        <button onclick="toggleComplete('${note.name}')">Complete</button>
+      `;
+      notesList.appendChild(noteDiv);
+    });
+  }
+
+  todoList.render();
   
   
