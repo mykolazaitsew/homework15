@@ -1,0 +1,122 @@
+class Note {
+    constructor(name, description) {
+      if (!name || !description) {
+        throw new Error("не може бути пустим");
+      }
+      this.name = name;
+      this.description = description;
+      this.createdAt = new Date();
+      this.editedAt = null;
+      this.completed = false;
+    }
+  
+    edit(name, description) {
+      if (!name || !description) {
+        throw new Error("не може бути пустим");
+      }
+      this.name = name;
+      this.description = description;
+      this.editedAt = new Date();
+    }
+  
+    markAsCompleted() {
+      this.completed = true;
+    }
+  }
+  
+  class TodoList {
+    constructor() {
+      this.notes = [];
+    }
+  
+    addNote(name, description) {
+      const note = new Note(name, description);
+      this.notes.push(note);
+    }
+  
+    deleteNote(name) {
+      this.notes = this.notes.filter((note) => note.name !== name);
+    }
+  
+    editNote(name, newName, newDescription) {
+      const note = this.notes.find((note) => note.name === name);
+      if (note) {
+        note.edit(newName, newDescription);
+      }
+    }
+  
+    markAsCompleted(name) {
+      const note = this.notes.find((note) => note.name === name);
+      if (note) {
+        note.markAsCompleted();
+      }
+    }
+  
+    getNote(name) {
+      return this.notes.find((note) => note.name === name);
+    }
+  
+    getAllNotes() {
+      return this.notes;
+    }
+  
+    getUnfulfilledNotesCount() {
+      return this.notes.filter((note) => !note.completed).length;
+    }
+  
+    getNotesCount() {
+      return this.notes.length;
+    }
+  
+    searchByName(name) {
+      return this.notes.filter((note) => note.name.includes(name));
+    }
+  
+    sortByStatus() {
+      this.notes.sort((a, b) => a.completed - b.completed);
+    }
+  
+    sortByCreationDate() {
+      this.notes.sort((a, b) => a.createdAt - b.createdAt);
+    }
+  
+    sortByEditDate() {
+      this.notes.sort((a, b) => (a.editedAt || a.createdAt) - (b.editedAt || b.createdAt));
+    }
+  }
+    
+
+  const todoList = new TodoList();
+  
+  function addNote() {
+    const name = document.getElementById('noteName').value;
+    const description = document.getElementById('noteDescription').value;
+    try {
+      todoList.addNote(name, description);
+      document.getElementById('noteName').value = '';
+      document.getElementById('noteDescription').value = '';
+    } catch (error) {
+      alert(error.message);
+    }
+  }
+  
+  function editNotePrompt(name) {
+    const note = todoList.getNote(name);
+    const newName = prompt('Введи нове імя для нотатки:', note.name);
+    const newDescription = prompt('Введи новий опис для нотатки:', note.description);
+    if (newName && newDescription) {
+      todoList.editNote(name, newName, newDescription);
+    }
+  }
+  
+  function deleteNotePrompt(name) {
+    if (confirm(`Ти впевнений видалити нотатку ${name}?`)) {
+      todoList.deleteNote(name);
+    }
+  }
+  
+  function toggleComplete(name) {
+    todoList.markAsCompleted(name);
+  }
+  
+  
