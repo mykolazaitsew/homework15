@@ -19,6 +19,7 @@ class Note {
       this.editedAt = new Date();
     }
   
+    
     markAsCompleted() {
       this.completed = true;
     }
@@ -98,6 +99,12 @@ class Note {
   function addNote() {
     const name = document.getElementById('noteName').value;
     const description = document.getElementById('noteDescription').value;
+
+    if (todoList.notes.some(note => note.name === name )) {
+      alert('Імя нотатки не може бути однаковим');
+      return;
+    }
+    
     try {
       todoList.addNote(name, description);
       document.getElementById('noteName').value = '';
